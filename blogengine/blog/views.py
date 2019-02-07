@@ -1,9 +1,9 @@
 from django.shortcuts import render, redirect
 from django.views.generic import View
 
-from .utils import ObjectDetailMixin
+from .utils import ObjectDetailMixin, ObjectCreateMixin
 from .models import Post, Tag
-from .forms import TagForm
+from .forms import TagForm, PostForm
 # from django.http import HttpResponse
 # Create your views here.
 
@@ -11,22 +11,17 @@ class PostDetail(ObjectDetailMixin, View):
     model = Post
     template = 'blog/post_detail.html'
 
+class PostCreate(ObjectCreateMixin, View):
+    form_model = PostForm
+    template = 'blog/post_create.html'
+
 class TagDetail(ObjectDetailMixin, View):
     model = Tag
     template = 'blog/tag_detail.html'
 
-class TagCreate(View):
-    def get(self, request):
-        form = TagForm()
-        return render(request, 'blog/tag_create.html', context={'form':form})
-    
-    def post(self, request):
-        bound_form = TagForm(request.POST)
-
-        if bound_form.is_valid():
-            new_tag = bound_form.save()
-            return redirect(new_tag) #Использует get_abosolute_url
-        return render(request, 'blog/tag_create.html', context={'form':bound_form})
+class TagCreate(ObjectCreateMixin, View):
+    form_model = TagForm
+    template = 'blog/tag_create.html'
 
 
 def posts_list(request):
